@@ -20,7 +20,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
 		dynamic.addMapping("/");
 		dynamic.setLoadOnStartup(1);
 		
-		//SVM Trainer - Init
+		//SVM Trainer - Init - Singleton Instance -  
 		svmtrain = SVMMain.GetInstance();
 	}
 }

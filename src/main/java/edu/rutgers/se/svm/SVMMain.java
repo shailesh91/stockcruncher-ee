@@ -1,19 +1,20 @@
 package edu.rutgers.se.svm;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-import edu.rutgers.se.utils.Utilities;
-import libsvm.svm;
-import libsvm.svm_model;
-import libsvm.svm_node;
-import libsvm.svm_parameter;
-import libsvm.svm_problem;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+
+import edu.rutgers.se.svm.libsvm.svm;
+import edu.rutgers.se.svm.libsvm.svm_model;
+import edu.rutgers.se.svm.libsvm.svm_node;
+import edu.rutgers.se.svm.libsvm.svm_parameter;
+import edu.rutgers.se.svm.libsvm.svm_problem;
 
 public class SVMMain {
 	private HashMap<svm_model, Integer> gModelDataPoints = new HashMap<svm_model, Integer>();
@@ -22,13 +23,15 @@ public class SVMMain {
 	public BufferedReader reader = null;
 	public double[] MyY;
 	public double[][] MyX;
-	private static final String filedir = System.getProperty("user.dir") + "/svm/";
+	private static final String filedir = "svm/";
 	
 	public static int countLines(String filename) throws IOException {
 		int o = 0;
 		try {
+			Resource resource = new ClassPathResource(filedir+filename);
+			
 			BufferedReader input = new BufferedReader(
-					new InputStreamReader(Utilities.class.getClassLoader().getResourceAsStream(filedir+filename)));
+					new InputStreamReader (resource.getInputStream()));
 			String nextLine;
 
 			while ((nextLine = input.readLine()) != null) {
@@ -92,11 +95,12 @@ public class SVMMain {
 		int NumFeat = countLines(filename);
 		MyX = new double[count][NumFeat];// the attributes
 		int ColNum = 0;
-
+		System.out.println(filename);
 		// reading one instance of cup & handle
 		try {
+			Resource resource = new ClassPathResource(filedir+filename);
 			BufferedReader input = new BufferedReader(
-					new InputStreamReader(Utilities.class.getClassLoader().getResourceAsStream(filedir+filename)));
+					new InputStreamReader(resource.getInputStream()));
 			String Line = null;
 			while ((Line = input.readLine()) != null) {
 				MyX[0][ColNum] = Double.parseDouble(Line);

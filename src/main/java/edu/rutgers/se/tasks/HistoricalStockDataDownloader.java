@@ -18,6 +18,6 @@ public class HistoricalStockDataDownloader {
     public void keepAlive() {
         //log "alive" every 12 Hours for sanity checks
 		LOGGER.debug("historical alive");
-		HistoricalStockData.collectData();
+		//HistoricalStockData.collectData();
     }
 }

@@ -11,7 +11,6 @@
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>1.1.1.RELEASE</version>
     </parent>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -62,5 +61,15 @@
 	    	<artifactId>scala-library</artifactId>
 	    	<version>2.10.3</version>
 	    </dependency>
+	    <dependency>
+		  <groupId>org.jvnet.ws.wadl</groupId>
+		  <artifactId>wadl-core</artifactId>
+		  <version>1.1.6</version>
+		</dependency> 
+		<dependency>
+		    <groupId>org.jvnet.ws.wadl</groupId>
+		    <artifactId>wadl-client-plugin</artifactId>
+		    <version>1.1.6</version>
+		</dependency>
     </dependencies> 
 </project>
