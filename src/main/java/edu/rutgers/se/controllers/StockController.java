@@ -1,5 +1,8 @@
 package edu.rutgers.se.controllers;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import edu.rutgers.se.beans.Status;
 import edu.rutgers.se.components.IStockService;
+import edu.rutgers.se.svm.SVMMain;
+import edu.rutgers.se.svm.libsvm.svm_model;
 
 @RestController
 @RequestMapping("/data")
@@ -23,5 +28,10 @@ public class StockController {
 		s.setId(200);
 		s.setMessage("Stock Initialization Started");
 		return s;
-	}
+	}	
+	
+	
+	
+	
+	
 }
