@@ -1,8 +1,8 @@
 package edu.rutgers.se.rsi;
 
-import edu.rutgers.se.rsi.jama.Matrix;
+import jama.Matrix;
 import java.util.Random;
-import edu.rutgers.se.rsi.jkalman.JKalman;
+import jkalman.JKalman;
 
 public class KalmanPredictor {
 	

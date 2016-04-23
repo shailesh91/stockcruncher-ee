@@ -5,7 +5,7 @@ import org.neuroph.core.learning.SupervisedTrainingElement;
 import org.neuroph.core.learning.TrainingElement;
 import org.neuroph.core.learning.TrainingSet;
 import org.neuroph.nnet.MultiLayerPerceptron;
-import org.neuroph.nnet.learning.LMS;
+import org.neuroph.nnet.learning.BackPropagation;
 
 import edu.rutgers.se.config.DatabaseManager;
 
@@ -14,10 +14,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
-
-/**
- * Created by Hon on 4/14/2015.
- */
 
 public class ANN {
 
@@ -40,9 +36,9 @@ public class ANN {
 		int outputNum = 1;
 		int middleLayer = 9;
 		neuralNet = new MultiLayerPerceptron(inputNum, middleLayer, outputNum);
-		((LMS) neuralNet.getLearningRule()).setMaxError(0.001);// 0-1
-		((LMS) neuralNet.getLearningRule()).setLearningRate(0.7);// 0-1
-		((LMS) neuralNet.getLearningRule()).setMaxIterations(maxIterations);// 0-1
+		((BackPropagation) neuralNet.getLearningRule()).setMaxError(0.001);// 0-1
+		((BackPropagation) neuralNet.getLearningRule()).setLearningRate(0.7);// 0-1
+		((BackPropagation) neuralNet.getLearningRule()).setMaxIterations(maxIterations);// 0-1
 	}
 
 	public void predictNext() {
@@ -80,11 +76,6 @@ public class ANN {
 				neuralNet.setInput(testElement.getInput());
 				neuralNet.calculate();
 				Vector<Double> networkOutput = neuralNet.getOutput();
-				// System.out.println("Input is :");
-				// for (double input : testElement.getInput()) {
-				// input = deNorm(input, priceMaxAll[symbolOffset]);
-				// System.out.println(input);
-				// }
 				for (double output : networkOutput) {
 					output = Math.round(deNorm(output, priceMax) * 100.0) / 100.0;
 					resultNext = output;
@@ -313,76 +304,40 @@ public class ANN {
 	}
 
 	public void storeResult(int symbolNum) {
-
-		try {
-
-//			Connection connection;
-//
-//			connection = DriverManager.getConnection(DatabaseManager.URL + DatabaseManager.DATABASE_NAME,
-//					DatabaseManager.USER_NAME, DatabaseManager.PASSWORD);
-//
-//			Statement statement = connection.createStatement();
-
-			String action;
-			for (int i = 0; i < resultData.size(); ++i) {
-				if (i == resultData.size() - 1) {
-					action = "UNKNOWN";
-					String q = "INSERT INTO PredictionANN VALUES (11, '"
-							+ resultDate.get(i) + "', " + resultData.get(i) + "," + 0 + ", '" + action + "')";
-					System.out.println(q);
-					//statement.executeUpdate();
+		String action;
+		for (int i = 0; i < resultData.size(); ++i) {
+			if (i == resultData.size() - 1) {
+				action = "UNKNOWN";
+				String q = "INSERT INTO PredictionANN VALUES (11, '"
+						+ resultDate.get(i) + "', " + resultData.get(i) + "," + 0 + ", '" + action + "')";
+				System.out.println(q);
+				//statement.executeUpdate();
+			} else {
+				if (resultData.get(i) < resultData.get(i + 1)) {
+					action = "BUY";
+				} else if (resultData.get(i) > resultData.get(i + 1)) {
+					action = "SELL";
 				} else {
-					if (resultData.get(i) < resultData.get(i + 1)) {
-						action = "BUY";
-					} else if (resultData.get(i) > resultData.get(i + 1)) {
-						action = "SELL";
-					} else {
-						action = "HOLD";
-					}
-					String q = "INSERT INTO PredictionANN VALUES (11, '"
-							+ resultDate.get(i) + "', " + resultData.get(i) + ","
-							+ Math.round((resultData.get(i) - historicalData.get(i + trainingLength))
-									/ historicalData.get(i + trainingLength) * 10000.0) / 100.0
-							+ ", '" + action + "')";
-					System.out.println(q);
-					//statement.executeUpdate(q);
+					action = "HOLD";
 				}
+				String q = "INSERT INTO PredictionANN VALUES (11, '"
+						+ resultDate.get(i) + "', " + resultData.get(i) + ","
+						+ Math.round((resultData.get(i) - historicalData.get(i + trainingLength))
+								/ historicalData.get(i + trainingLength) * 10000.0) / 100.0
+						+ ", '" + action + "')";
+				System.out.println(q);
+				//statement.executeUpdate(q);
 			}
-
-			//connection.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("database operation error (storing).");
 		}
-
 	}
 
 	public void storeNext(int symbolNum) {
+		String action;
 
-		try {
-
-//			Connection connection;
-//
-//			connection = DriverManager.getConnection(DatabaseManager.URL + DatabaseManager.DATABASE_NAME,
-//					DatabaseManager.USER_NAME, DatabaseManager.PASSWORD);
-//
-//			Statement statement = connection.createStatement();
-
-			String action;
-
-			action = "UNKNOWN";
-			String q = "INSERT INTO PredictionANN VALUES (11, '" + nextDate
-					+ "', " + nextData + "," + 0 + ", '" + action + "')";
-			System.out.println(q);
-//			statement.executeUpdate();
-//
-//			connection.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("database operation error (storing next).");
-		}
+		action = "UNKNOWN";
+		String q = "INSERT INTO PredictionANN VALUES (11, '" + nextDate
+				+ "', " + nextData + "," + 0 + ", '" + action + "')";
+		System.out.println(q);
 
 	}
 
@@ -399,13 +354,6 @@ public class ANN {
 
 	// normalize the inputs
 	private double norm(double num, double max) {
-		// double[] norm = new double[nums.length];
-		// for (int i =0; i < nums.length; ++i) {
-		// norm[i] = (nums[i] / max) * 0.8 + 0.1;
-		// 0.8 and 0.1 will be used to avoid the very small (0.0...) and very
-		// big (0.9999) values
-		// }
-		// return norm;
 		return (num / max) * 0.8 + 0.1;
 	}
 

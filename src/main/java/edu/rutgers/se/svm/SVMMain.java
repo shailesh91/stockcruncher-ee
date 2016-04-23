@@ -10,7 +10,7 @@ import java.util.Random;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-import edu.rutgers.se.svm.libsvm.*;
+import libsvm.*;
 
 
 public class SVMMain {

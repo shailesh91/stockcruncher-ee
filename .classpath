@@ -153,5 +153,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/Users/shaileshgoel/Documents/workspace_spring/stockcruncher-ee/src/main/webapp/WEB-INF/lib/neuroph.jar"/>
+	<classpathentry kind="lib" path="/Users/shaileshgoel/Documents/workspace_spring/stockcruncher-ee/src/main/webapp/WEB-INF/lib/JKalman.jar"/>
+	<classpathentry kind="lib" path="/Users/shaileshgoel/Documents/workspace_spring/stockcruncher-ee/src/main/webapp/WEB-INF/lib/libsvm.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

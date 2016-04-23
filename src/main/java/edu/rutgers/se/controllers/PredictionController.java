@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import edu.rutgers.se.svm.libsvm.svm_model;
+import libsvm.svm_model;
 import edu.rutgers.se.beans.HistStock;
 import edu.rutgers.se.beans.InstStock;
 import edu.rutgers.se.beans.Stock;
@@ -96,21 +96,6 @@ public class PredictionController {
 			
 		}
 		return pr;
-
-//		model.addObject("predictionPrices",pr.predictionPrices);
-//		model.addObject("goesUpOrDownForDay",pr.goesUpOrDownForDay);
-//		model.addObject("nextDayDifference",pr.nextDayDifference);
-//		model.addObject("nextDayPercentageDifference",pr.nextDayPercentageDifference);
-//		model.addObject("goesUpOrDownFor5Day",pr.goesUpOrDownFor5Day);
-//		model.addObject("fiveDayDifference",pr.difference);
-//		model.addObject("fiveDayPercentageDifference",pr.fiveDayPercentageDifference);
-//		model.addObject("buy",pr.buy);
-//		model.addObject("sell",pr.sell);
-//		model.addObject("hold",pr.hold);
-//		model.addObject("predict", pr.predict); 
-//
-//		model.addObject("current_ticker", t);
-//		model.addObject("available_data",allData);
 	}
 	
 	private PredictionResults doPrediction(List<InstStock> allData) throws java.io.IOException
