@@ -7,11 +7,7 @@ import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import edu.rutgers.se.svm.SVMMain;
-
 public class WebAppInitializer implements WebApplicationInitializer {
-	private static SVMMain svmtrain;
-	
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
 		ctx.register(AppConfig.class);
@@ -19,8 +15,5 @@ public class WebAppInitializer implements WebApplicationInitializer {
 		Dynamic dynamic = servletContext.addServlet("dispatcher", new DispatcherServlet(ctx));
 		dynamic.addMapping("/");
 		dynamic.setLoadOnStartup(1);
-		
-		//SVM Trainer - Init - Singleton Instance -  
-		svmtrain = SVMMain.GetInstance();
 	}
 }

@@ -1,19 +1,32 @@
 package edu.rutgers.se.controllers;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import edu.rutgers.se.svm.libsvm.svm_model;
 import edu.rutgers.se.beans.HistStock;
 import edu.rutgers.se.beans.InstStock;
 import edu.rutgers.se.beans.Stock;
+import edu.rutgers.se.config.DatabaseManager;
 import edu.rutgers.se.rsi.KalmanPredictor;
 import edu.rutgers.se.rsi.RSI;
 import edu.rutgers.se.svm.SVMMain;
 
-import libsvm.svm_model;
-
+@RestController
+@RequestMapping("/data")
 public class PredictionController {
+	
 	private static class PredictionResults implements Comparable {
 		public double[] predictionPrices;
 		public String goesUpOrDownForDay;
@@ -70,9 +83,41 @@ public class PredictionController {
 	}
 	
 	
+	@RequestMapping("/stockPrediction")
+	public PredictionResults getStockPrediction(@RequestParam(value = "stockid",required = true) Integer stockid, @RequestParam(value = "symbol",required = true) String symbol) throws InterruptedException, ExecutionException{
+		Stock st = new Stock();
+		st.setId(stockid);
+		st.setSymbol(symbol);
+		PredictionResults pr = null;
+		try{
+			List<InstStock> stockData = getDailyClosingPrices(st);
+			pr = doPrediction(stockData);
+		}catch(Exception e){
+			
+		}
+		return pr;
+
+//		model.addObject("predictionPrices",pr.predictionPrices);
+//		model.addObject("goesUpOrDownForDay",pr.goesUpOrDownForDay);
+//		model.addObject("nextDayDifference",pr.nextDayDifference);
+//		model.addObject("nextDayPercentageDifference",pr.nextDayPercentageDifference);
+//		model.addObject("goesUpOrDownFor5Day",pr.goesUpOrDownFor5Day);
+//		model.addObject("fiveDayDifference",pr.difference);
+//		model.addObject("fiveDayPercentageDifference",pr.fiveDayPercentageDifference);
+//		model.addObject("buy",pr.buy);
+//		model.addObject("sell",pr.sell);
+//		model.addObject("hold",pr.hold);
+//		model.addObject("predict", pr.predict); 
+//
+//		model.addObject("current_ticker", t);
+//		model.addObject("available_data",allData);
+	}
+	
 	private PredictionResults doPrediction(List<InstStock> allData) throws java.io.IOException
 	{
 		PredictionResults pr = new PredictionResults();
+		try{
+		
 
 		double[] allClosingPrices=new double[allData.size()];
 		for(int i=0; i<allData.size(); i++){
@@ -86,8 +131,9 @@ public class PredictionController {
 				prices[indx]=allData.get(i).instPrice;
 				indx++;
 			}
-
-			KalmanPredictor kp = KalmanPredictor.GetInstance();
+			
+			
+			KalmanPredictor kp = new KalmanPredictor();
 			double[] u = kp.DWaveletT(prices, 32);
 			double[] inter_signal = kp.interpolator(prices, u);
 			double[] pre = kp.KalmanFilter(inter_signal, 32);
@@ -202,8 +248,37 @@ public class PredictionController {
 			pr.hold=hold;//model.addObject("hold", hold);
 
 		}
-
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 		return pr;
+	}
+	
+	public List<InstStock> getDailyClosingPrices(Stock st) throws Exception {
+		Class.forName("com.mysql.jdbc.Driver");
+		Connection connection;
+		connection = DriverManager.getConnection(DatabaseManager.URL + DatabaseManager.DATABASE_NAME, DatabaseManager.USER_NAME, DatabaseManager.PASSWORD);
+		System.out.println(st.getId());
+		
+		List<InstStock> prices = new ArrayList<InstStock>();
+		try {
+			Statement statement = connection.createStatement();
+			String query = "select hist_date, close_price from hist_data where stock_id="+st.getId()+" ORDER BY hist_date DESC";
+			System.out.println(query);
+			ResultSet res = statement.executeQuery(query);
+			//s.setString(1, pTicker.getTickerSymbol());
+			while(res.next()) {
+				InstStock stock = new InstStock();
+				stock.setStock(st);
+				stock.setInstDateTime(res.getDate("hist_date"));
+				stock.setInstPrice(res.getDouble("close_price"));
+				prices.add(stock);
+			}
+			connection.close();
+		} catch (Exception e) {
+			
+		}
+		return prices;
 	}
 
 }

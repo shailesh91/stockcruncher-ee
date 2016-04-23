@@ -10,11 +10,8 @@ import java.util.Random;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-import edu.rutgers.se.svm.libsvm.svm;
-import edu.rutgers.se.svm.libsvm.svm_model;
-import edu.rutgers.se.svm.libsvm.svm_node;
-import edu.rutgers.se.svm.libsvm.svm_parameter;
-import edu.rutgers.se.svm.libsvm.svm_problem;
+import edu.rutgers.se.svm.libsvm.*;
+
 
 public class SVMMain {
 	private HashMap<svm_model, Integer> gModelDataPoints = new HashMap<svm_model, Integer>();

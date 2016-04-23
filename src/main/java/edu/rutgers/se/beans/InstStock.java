@@ -4,22 +4,22 @@ import java.util.Date;
 
 public class InstStock {
 	public Stock stock;
-	public Date entryDate;
+	public Date instDateTime;
 	public double instPrice;
 	public long volume;
 
-	public Stock getTicker() {
+	public Stock getStock() {
 		return stock;
 	}
-	public void setTicker(Stock _Stock) {
+	public void setStock(Stock _Stock) {
 		stock = _Stock;
 	}
 	
-	public Date getEntryDate() {
-		return entryDate;
+	public Date getInstDateTime() {
+		return instDateTime;
 	}
-	public void setEntryDate(Date _EntryDate) {
-		entryDate = _EntryDate;
+	public void setInstDateTime(Date _instDateTime) {
+		instDateTime = _instDateTime;
 	}
 
 	
@@ -39,6 +39,6 @@ public class InstStock {
 
 	public String toString() {
 		return "InstStock "+stock.getSymbol()+
-			" "+entryDate+" "+instPrice+" "+volume;
+			" "+instDateTime+" "+instPrice+" "+volume;
 	}
 }

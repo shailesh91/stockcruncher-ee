@@ -153,5 +153,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/Users/shaileshgoel/Documents/workspace_spring/ANN-neuroph/neuroph.jar"/>
+	<classpathentry kind="lib" path="/Users/shaileshgoel/Downloads/JKalman-1.0/dist/JKalman.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

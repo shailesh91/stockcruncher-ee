@@ -18,6 +18,6 @@ public class RealTimeStockDataDownloader {
     public void keepAlive() {
         //log "alive" every minute for sanity checks
         LOGGER.debug("realtime alive");
-        //RealtimeStockData.collectData();
+        RealtimeStockData.collectData();
     }
 }

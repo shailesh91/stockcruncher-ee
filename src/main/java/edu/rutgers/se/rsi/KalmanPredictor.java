@@ -1,8 +1,8 @@
 package edu.rutgers.se.rsi;
 
-import jama.Matrix;
+import edu.rutgers.se.rsi.jama.Matrix;
 import java.util.Random;
-import jkalman.JKalman;
+import edu.rutgers.se.rsi.jkalman.JKalman;
 
 public class KalmanPredictor {
 	
@@ -155,61 +155,4 @@ public class KalmanPredictor {
 		}		
 		return signal;
 	}
-	
-	private static KalmanPredictor instance;
-	
-	public static KalmanPredictor GetInstance() {
-		if(KalmanPredictor.instance == null) {
-			try {
-				KalmanPredictor.instance = new KalmanPredictor();
-			} catch (Exception e) {
-				System.out.println("FAILED TO START THE RSI");
-			}
-		}
-		return KalmanPredictor.instance;
-	}
-
-//    public static void main(String[] args) {
-//
-//        try {
-//        	
-//			//------------------- CSV File Operation -----------------//
-//			
-//			String datafile = "/Users/rostami/Developer Tools/Java/workspace/JKalman/histdata.csv"; // the file name has been hard coded
-//			BufferedReader br = null;
-//			String line = "";
-//			String seperator = ",";
-//			String singel_price = "";
-//			double[] price = new double[2000];		// Doesn't accept CSV files with more than 2000 lines
-//			int counter = 0;
-//
-//			br = new BufferedReader(new FileReader(datafile));
-//			while ((line = br.readLine()) != null) {
-//				String[] line_ = line.split(seperator);
-//				singel_price = line_[3].replaceAll("^\"|\"$", "");
-//				price [counter++] = Double.parseDouble(singel_price);
-//			}
-//			br.close();
-//			//------------------- CSV File Operation -----------------//
-//			
-//			double[] signal = new double[32];
-//			int j=0;
-//			for (int i=counter-32; i<counter; i++){
-//				signal[j++] = price[i];
-//			}
-//			
-//			double[] u = DWaveletT(signal, 32);
-//			double[] inter_signal = interpolator(signal, u);
-//			double[] pre = KalmanFilter(inter_signal, 32);
-//			
-//			for(j=0; j<10; j++){
-//				System.out.println(pre[j]);
-//			}
-//        	
-//        } catch (Exception ex) {
-//            System.out.println(ex.getMessage());
-//        }
-//    }
 }
-
-

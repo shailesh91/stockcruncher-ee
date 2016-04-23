@@ -1,6 +1,0 @@
-edu/rutgers/se/beans/Person.class
-edu/rutgers/se/components/PersonService.class
-edu/rutgers/se/config/AppConfig.class
-edu/rutgers/se/components/IPersonService.class
-edu/rutgers/se/controllers/PersonController.class
-edu/rutgers/se/config/WebAppInitializer.class

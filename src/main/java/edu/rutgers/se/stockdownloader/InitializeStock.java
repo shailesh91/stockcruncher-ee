@@ -34,12 +34,12 @@ public class InitializeStock {
 			Calendar calendar = new GregorianCalendar();
 			calendar.setTime(end);
 			int yearEnd = calendar.get(Calendar.YEAR);
-			int monthEnd = calendar.get(Calendar.MONTH) + 1;
+			int monthEnd = calendar.get(Calendar.MONTH);
 			int dayEnd = calendar.get(Calendar.DAY_OF_MONTH);
 			
 			calendar.setTime(DateUtils.addDays(end, -365));
 			int yearStart = calendar.get(Calendar.YEAR);
-			int monthStart = calendar.get(Calendar.MONTH) + 1;
+			int monthStart = calendar.get(Calendar.MONTH);
 			int dayStart = calendar.get(Calendar.DAY_OF_MONTH);
 			
 			Class.forName("com.mysql.jdbc.Driver");
@@ -58,10 +58,8 @@ public class InitializeStock {
 			while (input.hasNext()) {
 				String line = input.nextLine();
 				String[] tokens = line.split(",");
-				String query = "INSERT INGNORE INTO `hist_data`(`stock_id`, `hist_date`, `open_price`, `close_price`, `min_price`, `max_price`, `adj_close`, `volume`) "
-						+ "VALUES ("+stockid+",'" + tokens[0] + "'," + tokens[1] + "," + tokens[4] + "," + tokens[3] + ","
-						+ tokens[2] + "," + tokens[6] + "," + tokens[5] + ")";
-				statement.executeUpdate(query);
+				String query = "INSERT IGNORE INTO `hist_data`(`stock_id`, `hist_date`, `open_price`, `close_price`, `min_price`, `max_price`, `adj_close`, `volume`) VALUES ("+stockid+",'" + tokens[0] + "'," + tokens[1] + "," + tokens[4] + "," + tokens[3] + "," + tokens[2] + "," + tokens[6] + "," + tokens[5] + ")";
+				statement.execute(query);
 			}
 			input.close();
 			connection.close();
@@ -76,7 +74,7 @@ public class InitializeStock {
 			Connection connection;
 			connection = DriverManager.getConnection(DatabaseManager.URL + DatabaseManager.DATABASE_NAME,
 					DatabaseManager.USER_NAME, DatabaseManager.PASSWORD);
-			Statement statement = connection.createStatement();
+			
 			
 			long end = System.currentTimeMillis()/1000;
 			long start = System.currentTimeMillis()/1000 - 604800;
@@ -98,8 +96,9 @@ public class InitializeStock {
 			        
 			        SimpleDateFormat to = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 					String datetime = to.format(d);    
+					Statement statement = connection.createStatement();
 					String query ="INSERT IGNORE INTO `inst_data`(`stock_id`, `inst_datetime`, `inst_price`, `volume`) VALUES ("+stockid+",'"+datetime+"'," + price + "," + volume + ")";
-					statement.executeUpdate(query);
+					statement.execute(query);
 			    }
 			    end = end - 604800;
 			    start = start - 604800;

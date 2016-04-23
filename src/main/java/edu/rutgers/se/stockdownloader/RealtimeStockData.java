@@ -9,24 +9,36 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 
+import edu.rutgers.se.beans.InstStock;
+import edu.rutgers.se.beans.Stock;
 import edu.rutgers.se.config.DatabaseManager;
 
 public class RealtimeStockData {
 	
 	public static void collectData(){
 		try {
+			System.out.println("Realtime Stock Update");
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection connection;
 			connection = DriverManager.getConnection(DatabaseManager.URL + DatabaseManager.DATABASE_NAME,
 					DatabaseManager.USER_NAME, DatabaseManager.PASSWORD);
 			Statement statement = connection.createStatement();
-			ResultSet rs = statement.executeQuery("SELECT id, stock_symbol FROM stocks WHERE init = 0 AND id IN (SELECT DISTINCT stock_id FROM portfolio_items)");
-		    while(rs.next()){
-			    int stockid = rs.getInt("id");
-				String symbol = rs.getString("stock_symbol");
-				String url = "http://finance.yahoo.com/d/quotes.csv?s=" + symbol + "&f=sd1t1l1v&e=.csv";
+			ResultSet rs = statement.executeQuery("SELECT id, stock_symbol FROM stocks WHERE init = 1 AND id IN (SELECT DISTINCT stock_id FROM portfolio_items)");
+			List<Stock> allStocks = new ArrayList<Stock>();
+			while(rs.next()){
+		    	Stock st = new Stock();
+				st.setId(rs.getInt("id"));
+				st.setSymbol(rs.getString("stock_symbol"));
+				allStocks.add(st);
+		    }
+			for(Stock s:allStocks){
+				String symbol = s.getSymbol();
+				int stockid = s.getId();
+			
+		    	String url = "http://finance.yahoo.com/d/quotes.csv?s=" + symbol + "&f=sd1t1l1v&e=.csv";
 				System.out.println(url);
 				URL yahoolive = new URL(url);
 				URLConnection datalive = yahoolive.openConnection();
@@ -51,8 +63,7 @@ public class RealtimeStockData {
 				}
 				input.close();
 			}
-		    rs.close();
-			connection.close();
+		    connection.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
