@@ -1,6 +1,6 @@
 package edu.rutgers.se.rsi.jama;
 
-import jama.util.Maths;
+import edu.rutgers.se.rsi.jama.util.Maths;
 
 /** Eigenvalues and eigenvectors of a real matrix. 
 <P>

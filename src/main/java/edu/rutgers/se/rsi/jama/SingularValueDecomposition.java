@@ -1,5 +1,5 @@
 package edu.rutgers.se.rsi.jama;
-import jama.util.*;
+import edu.rutgers.se.rsi.jama.util.*;
 
 /** Singular Value Decomposition.
    <P>
