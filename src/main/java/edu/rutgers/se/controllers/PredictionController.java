@@ -137,8 +137,8 @@ public class PredictionController {
 			double rounded = (double) toBeRounded;
 			difference = rounded/100;
 		            
-			if (difference>0) pr.goesUpOrDownForDay="1";//model.addObject("goesUpOrDownForDay", "1"); 
-			else pr.goesUpOrDownForDay="0";//model.addObject("goesUpOrDownForDay", "0"); 
+			if (difference>0) pr.goesUpOrDownForDay="1"; 
+			else pr.goesUpOrDownForDay="0"; 
 					
 			double percentageDifference = (Math.abs(allData.get(0).instPrice-pre[0])/((allData.get(0).instPrice+pre[0])/2))*100;
 			toBeRounded = (int) (percentageDifference * 100);
@@ -146,26 +146,25 @@ public class PredictionController {
 			percentageDifference = rounded/100;
 					
 					
-			pr.nextDayDifference = difference;//model.addObject("nextDayDifference", difference); 
-			pr.nextDayPercentageDifference = percentageDifference;//model.addObject("nextDayPercentageDifference", percentageDifference); 
+			pr.nextDayDifference = difference; 
+			pr.nextDayPercentageDifference = percentageDifference; 
 					
 			difference = pre[4] - allData.get(0).instPrice;
 			int toBeRounded2 = (int) (difference * 100);
 			double rounded2 = (double) toBeRounded2;
 			difference = rounded2/100;
 		            
-			if (difference>0) pr.goesUpOrDownFor5Day="1";//model.addObject("goesUpOrDownFor5Day", "1"); 
-			else pr.goesUpOrDownFor5Day="0";//model.addObject("goesUpOrDownFor5Day", "0"); 
+			if (difference>0) pr.goesUpOrDownFor5Day="1"; 
+			else pr.goesUpOrDownFor5Day="0"; 
 			
 			percentageDifference = (Math.abs(allData.get(0).instPrice-pre[4])/((allData.get(0).instPrice+pre[4])/2))*100;
 			toBeRounded = (int) (percentageDifference * 100);
 			rounded = (double) toBeRounded;
 			percentageDifference = rounded/100;
 					
-			pr.difference=difference;//model.addObject("fiveDayDifference", difference); 
-			pr.fiveDayPercentageDifference=percentageDifference;//model.addObject("fiveDayPercentageDifference", percentageDifference); 
+			pr.difference=difference; 
+			pr.fiveDayPercentageDifference=percentageDifference; 
 					
-			//Pari's code
 			SVMMain svmPredict = SVMMain.GetInstance();
 			int[] patternsHappening=new int[7];
 			int pointer=0;
@@ -179,7 +178,7 @@ public class PredictionController {
 				        
 				if (isThePattern==1){
 					patternsHappening[pointer]=Integer.parseInt(pair.getKey().toString());
-					//gLogger.log("I DETECTED"+pair.getKey());
+					
 					pointer++;
 				}    
 			}
@@ -189,7 +188,6 @@ public class PredictionController {
 			double holdConfidence = 0;
 				    
 			for (int j=0; j< patternsHappening.length; j++){
-				//gLogger.log("IM="+patternsHappening[j]);
 				switch (patternsHappening[j]){
 				case 1:
 					sellConfidence=sellConfidence+1;
@@ -228,9 +226,9 @@ public class PredictionController {
 			double sell = (sellConfidence/totalConfidence)*100;
 			double hold = (holdConfidence/totalConfidence)*100;
 
-			pr.buy=buy;//model.addObject("buy", buy);
-			pr.sell=sell;//model.addObject("sell",sell);
-			pr.hold=hold;//model.addObject("hold", hold);
+			pr.buy=buy;
+			pr.sell=sell;
+			pr.hold=hold;
 
 		}
 		}catch(Exception e){
@@ -251,7 +249,6 @@ public class PredictionController {
 			String query = "select hist_date, close_price from hist_data where stock_id="+st.getId()+" ORDER BY hist_date DESC";
 			System.out.println(query);
 			ResultSet res = statement.executeQuery(query);
-			//s.setString(1, pTicker.getTickerSymbol());
 			while(res.next()) {
 				InstStock stock = new InstStock();
 				stock.setStock(st);
