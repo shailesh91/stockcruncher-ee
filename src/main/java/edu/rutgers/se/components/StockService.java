@@ -89,7 +89,7 @@ public class StockService implements IStockService{
 				sq.stock = st;
 				sq.instPrice = results.getDouble("inst_price");
 				sq.volume = results.getLong("volume");
-				sq.instDateTime = results.getDate("inst_datetime");
+				sq.instDateTime = results.getTimestamp("inst_datetime");
 				stockList.add(sq);
 			}
 			connection.close();
