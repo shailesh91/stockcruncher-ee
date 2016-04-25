@@ -11,10 +11,12 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import libsvm.svm_model;
+import edu.rutgers.se.ann.ANN;
 import edu.rutgers.se.beans.HistStock;
 import edu.rutgers.se.beans.InstStock;
 import edu.rutgers.se.beans.Stock;
@@ -80,22 +82,6 @@ public class PredictionController {
 				return 0;
 			}
 		}
-	}
-	
-	
-	@RequestMapping("/stockPrediction")
-	public PredictionResults getStockPrediction(@RequestParam(value = "stockid",required = true) Integer stockid, @RequestParam(value = "symbol",required = true) String symbol) throws InterruptedException, ExecutionException{
-		Stock st = new Stock();
-		st.setId(stockid);
-		st.setSymbol(symbol);
-		PredictionResults pr = null;
-		try{
-			List<InstStock> stockData = getDailyClosingPrices(st);
-			pr = doPrediction(stockData);
-		}catch(Exception e){
-			
-		}
-		return pr;
 	}
 	
 	private PredictionResults doPrediction(List<InstStock> allData) throws java.io.IOException
@@ -262,5 +248,56 @@ public class PredictionController {
 		}
 		return prices;
 	}
-
+	
+	@RequestMapping(value = "/stockPrediction", method=RequestMethod.GET)
+	public PredictionResults getStockPrediction(@RequestParam(value = "stockid",required = true) Integer stockid, @RequestParam(value = "symbol",required = true) String symbol) throws InterruptedException, ExecutionException{
+		Stock st = new Stock();
+		st.setId(stockid);
+		st.setSymbol(symbol);
+		PredictionResults pr = null;
+		try{
+			List<InstStock> stockData = getDailyClosingPrices(st);
+			pr = doPrediction(stockData);
+		}catch(Exception e){
+			
+		}
+		return pr;
+	}
+	
+	
+	@RequestMapping(value = "/getKFPrediction", method=RequestMethod.GET)
+	public void getKFPrediction(
+			@RequestParam(value = "stockid",required = true) Integer stockid, 
+			@RequestParam(value = "symbol",required = true) String symbol
+			) throws InterruptedException, ExecutionException{
+		Stock st = new Stock();
+		st.setId(stockid);
+		st.setSymbol(symbol);
+		ANN ann = new ANN();
+		ann.predictHistory(st);
+	}
+	
+	@RequestMapping(value = "/getSVMPrediction", method=RequestMethod.GET)
+	public void getSVMPrediction(
+			@RequestParam(value = "stockid",required = true) Integer stockid, 
+			@RequestParam(value = "symbol",required = true) String symbol
+			) throws InterruptedException, ExecutionException{
+		Stock st = new Stock();
+		st.setId(stockid);
+		st.setSymbol(symbol);
+		ANN ann = new ANN();
+		ann.predictHistory(st);
+	}
+	
+	@RequestMapping(value = "/getAnnPrediction", method=RequestMethod.GET)
+	public void getAnnPrediction(
+			@RequestParam(value = "stockid",required = true) Integer stockid, 
+			@RequestParam(value = "symbol",required = true) String symbol
+			) throws InterruptedException, ExecutionException{
+		Stock st = new Stock();
+		st.setId(stockid);
+		st.setSymbol(symbol);
+		ANN ann = new ANN();
+		ann.predictHistory(st);
+	}
 }

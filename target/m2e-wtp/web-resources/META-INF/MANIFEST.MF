@@ -1,5 +1,9 @@
 Manifest-Version: 1.0
+Implementation-Title: stockcruncher-ee
+Implementation-Version: 0.0.1-SNAPSHOT
 Built-By: shaileshgoel
+Implementation-Vendor-Id: edu.rutgers.se
 Build-Jdk: 1.8.0_66
 Created-By: Maven Integration for Eclipse
+Implementation-Vendor: Pivotal Software, Inc.
 

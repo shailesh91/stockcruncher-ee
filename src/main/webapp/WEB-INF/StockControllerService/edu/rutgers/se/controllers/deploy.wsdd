@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Use this file to deploy some handlers/chains and services      --><!-- Two ways to do this:                                           --><!--   java org.apache.axis.client.AdminClient deploy.wsdd          --><!--      after the axis server is running                          --><!-- or                                                             --><!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   --><!--      from the same directory that the Axis engine runs         --><deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from StockControllerService WSDL service -->
+
+  <service name="StockController" provider="java:RPC" style="wrapped" use="literal">
+      <parameter name="wsdlTargetNamespace" value="http://controllers.se.rutgers.edu"/>
+      <parameter name="wsdlServiceElement" value="StockControllerService"/>
+      <parameter name="schemaQualified" value="http://beans.se.rutgers.edu,http://controllers.se.rutgers.edu"/>
+      <parameter name="wsdlServicePort" value="StockController"/>
+      <parameter name="className" value="edu.rutgers.se.controllers.StockController"/>
+      <parameter name="wsdlPortType" value="StockController"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <operation xmlns:operNS="http://controllers.se.rutgers.edu" xmlns:retNS="http://controllers.se.rutgers.edu" xmlns:rtns="http://beans.se.rutgers.edu" name="initStock" qname="operNS:initStock" returnQName="retNS:initStockReturn" returnType="rtns:Status" soapAction="">
+        <parameter xmlns:pns="http://controllers.se.rutgers.edu" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:stockid" type="tns:int"/>
+        <parameter xmlns:pns="http://controllers.se.rutgers.edu" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:symbol" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://controllers.se.rutgers.edu" name="annPrediction" qname="operNS:annPrediction" soapAction="">
+        <parameter xmlns:pns="http://controllers.se.rutgers.edu" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:stockid" type="tns:int"/>
+        <parameter xmlns:pns="http://controllers.se.rutgers.edu" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:symbol" type="tns:string"/>
+      </operation>
+      <parameter name="allowedMethods" value="annPrediction initStock"/>
+
+      <typeMapping xmlns:ns="http://beans.se.rutgers.edu" qname="ns:Status" type="java:edu.rutgers.se.beans.Status" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle=""/>
+  </service>
+</deployment>

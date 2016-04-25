@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://controllers.se.rutgers.edu" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://controllers.se.rutgers.edu" xmlns:intf="http://controllers.se.rutgers.edu" xmlns:tns1="http://beans.se.rutgers.edu" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://controllers.se.rutgers.edu" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://beans.se.rutgers.edu"/>
+   <element name="initStock">
+    <complexType>
+     <sequence>
+      <element name="stockid" type="xsd:int"/>
+      <element name="symbol" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="initStockResponse">
+    <complexType>
+     <sequence>
+      <element name="initStockReturn" type="tns1:Status"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="annPrediction">
+    <complexType>
+     <sequence>
+      <element name="stockid" type="xsd:int"/>
+      <element name="symbol" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="annPredictionResponse">
+    <complexType/>
+   </element>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://beans.se.rutgers.edu" xmlns="http://www.w3.org/2001/XMLSchema">
+   <complexType name="Status">
+    <sequence>
+     <element name="id" type="xsd:int"/>
+     <element name="message" nillable="true" type="xsd:string"/>
+     <element name="messagel" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="initStockResponse">
+
+      <wsdl:part element="impl:initStockResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="initStockRequest">
+
+      <wsdl:part element="impl:initStock" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="annPredictionResponse">
+
+      <wsdl:part element="impl:annPredictionResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="annPredictionRequest">
+
+      <wsdl:part element="impl:annPrediction" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:portType name="StockController">
+
+      <wsdl:operation name="initStock">
+
+         <wsdl:input message="impl:initStockRequest" name="initStockRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:initStockResponse" name="initStockResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="annPrediction">
+
+         <wsdl:input message="impl:annPredictionRequest" name="annPredictionRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:annPredictionResponse" name="annPredictionResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="StockControllerSoapBinding" type="impl:StockController">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="initStock">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="initStockRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="initStockResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="annPrediction">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="annPredictionRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="annPredictionResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="StockControllerService">
+
+      <wsdl:port binding="impl:StockControllerSoapBinding" name="StockController">
+
+         <wsdlsoap:address location="http://localhost:8080/stockcruncher-ee/services/StockController"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>
