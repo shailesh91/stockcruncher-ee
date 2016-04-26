@@ -37,9 +37,7 @@ public class RealtimeStockData {
 			for(Stock s:allStocks){
 				String symbol = s.getSymbol();
 				int stockid = s.getId();
-			
-		    	String url = "http://finance.yahoo.com/d/quotes.csv?s=" + symbol + "&f=sd1t1l1v&e=.csv";
-				System.out.println(url);
+				String url = "http://finance.yahoo.com/d/quotes.csv?s=" + symbol + "&f=sd1t1l1v&e=.csv";
 				URL yahoolive = new URL(url);
 				URLConnection datalive = yahoolive.openConnection();
 				Scanner input = new Scanner(datalive.getInputStream());
@@ -48,7 +46,7 @@ public class RealtimeStockData {
 					String line = input.nextLine();
 					String[] tokenslive = line.split(",");
 					
-					SimpleDateFormat from = new SimpleDateFormat("dd/MM/yyyy");
+					SimpleDateFormat from = new SimpleDateFormat("MM/dd/yyyy");
 					SimpleDateFormat to = new SimpleDateFormat("yyyy-MM-dd");
 					Date date = from.parse(tokenslive[1].substring(1, tokenslive[1].length() - 1));       // 01/02/2014
 					String datefinal = to.format(date);     // 2014-02-01

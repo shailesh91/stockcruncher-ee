@@ -44,18 +44,18 @@ public class HistoricalStockData {
 				int monthEnd = calendar.get(Calendar.MONTH);
 				int dayEnd = calendar.get(Calendar.DAY_OF_MONTH);
 				
-				calendar.setTime(DateUtils.addDays(end, -365));
+				calendar.setTime(DateUtils.addDays(end, -2));
 				int yearStart = calendar.get(Calendar.YEAR);
 				int monthStart = calendar.get(Calendar.MONTH);
 				int dayStart = calendar.get(Calendar.DAY_OF_MONTH);
 				
-			    int stockid = s.getId();
+				int stockid = s.getId();
 				String symbol = s.getSymbol();
 				
 				String url = "http://real-chart.finance.yahoo.com/table.csv?" + "s=" + symbol + "&d=" + monthEnd
 						+ "&e=" + dayEnd + "&f=" + yearEnd + "&g=d" + "&a=" + monthStart + "&b="
 						+ dayStart + "&c=" + yearStart + "&ignore=.csv";
-				
+				System.out.println(url);
 				URL yahoofin = new URL(url);
 				URLConnection data = yahoofin.openConnection();
 				Scanner input = new Scanner(data.getInputStream());

@@ -73,9 +73,12 @@ public class StockService implements IStockService{
 	@Override
 	public List<InstStock> getRealtimeQuote(Stock st, Date begin, Date end){
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
 		String beginTime = sdf.format(begin);
 		String endTime = sdf.format(end);
-		String query = "SELECT * FROM inst_data i WHERE i.stock_id='"+st.getId()+"' AND i.inst_datetime between \""+beginTime+"\" AND \""+endTime+"\"";
+		//System.out.println(beginTime +"-"+endTime);
+		String query = "SELECT * FROM inst_data WHERE stock_id="+st.getId()+" AND inst_datetime between \""+beginTime+"\" AND \""+endTime+"\"";
+		//System.out.println(query);
 		List<InstStock> stockList = new ArrayList<InstStock>();
 		try {
 			Class.forName("com.mysql.jdbc.Driver");

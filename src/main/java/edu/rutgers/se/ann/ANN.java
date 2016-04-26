@@ -42,11 +42,12 @@ public class ANN {
 		((BackPropagation) neuralNet.getLearningRule()).setMaxIterations(maxIterations);// 0-1
 	}
 
-	public void predictNext2(double priceMax) {
+	public double predictNext2(double priceMax) {
 		double[] priceTemp;
 		double[] inputSet = new double[inputNum];
+		double prediction = priceMax;
 
-		System.out.println("---------- Start training ----------");
+		//System.out.println("---------- Start training ----------");
 		TrainingSet trainingSet = new TrainingSet();
 
 		priceTemp = new double[trainingLength];
@@ -66,9 +67,9 @@ public class ANN {
 		}
 
 		neuralNet.learnInSameThread(trainingSet);
-		System.out.println("---------- Finish training ----------");
+		//System.out.println("---------- Finish training ----------");
 
-		System.out.println("---------- Start testing ----------");
+		//System.out.println("---------- Start testing ----------");
 		TrainingSet testSet = new TrainingSet();
 
 		for (int j = trainingLength - inputNum, i = 0; j < trainingLength; ++j, ++i) {
@@ -80,36 +81,53 @@ public class ANN {
 			neuralNet.setInput(testElement.getInput());
 			neuralNet.calculate();
 			Vector<Double> networkOutput = neuralNet.getOutput();
-			System.out.println("Input is :");
 			for (double input : testElement.getInput()) {
 				input = deNorm(input, priceMax);
-				System.out.println(input);
+				//System.out.println(input);
 			}
-			System.out.println("Output is :");
 			for (double output : networkOutput) {
 				output = Math.round(deNorm(output, priceMax) * 100.0) / 100.0;
 				nextData = output;
-				System.out.println("predict day 2: " + output);
+				prediction = output;
+				//System.out.println("predict day 2: " + output);
 			}
 		}
-		System.out.println("---------- Finish testing ----------");
-
+		//System.out.println("---------- Finish testing ----------");
+		return prediction;
 	}
 
-	public void predictHistory(Stock st) {
+	public String predictHistory(Stock st) {
 
 		double[] priceTemp;
 		double priceMax;
 		double[] inputSet = new double[inputNum];
 		double[] priceAll;
+		double prediction =0;
 
-		historicalData = new ArrayList();
-		historicalDate = new ArrayList();
-		resultData = new ArrayList();
-		resultDate = new ArrayList();
-
+		historicalData = new ArrayList<Double>();
+		historicalDate = new ArrayList<String>();
+		
+		resultData = new ArrayList<Double>();
+		resultDate = new ArrayList<String>();
+		StringBuilder sb = new StringBuilder();
 		// load the stock data corresponding to the symbol
-		this.loadData(st.getId());
+		try {
+			Connection connection;
+			connection = DriverManager.getConnection(DatabaseManager.URL + DatabaseManager.DATABASE_NAME,
+					DatabaseManager.USER_NAME, DatabaseManager.PASSWORD);
+
+			Statement statement = connection.createStatement();
+			ResultSet res = statement.executeQuery("SELECT * FROM hist_data WHERE stock_id = '" + st.getId() + "'");
+			while (res.next()) {
+				historicalData.add(res.getDouble("close_price"));
+				historicalDate.add(res.getString("hist_date"));
+			}
+			connection.close();
+		} catch (Exception e) {
+			System.out.println("database operation error (loading).");
+		}
+		
+		//historical data - close_price, hist_date
 
 		// calculate the max closing price in history
 		priceAll = new double[historicalData.size()];
@@ -119,20 +137,16 @@ public class ANN {
 		priceMax = max(priceAll);
 
 		for (int dateOffset = 0; dateOffset < historicalData.size() - trainingLength + 1; ++dateOffset) {
-			File netFile = new File("11-"+ historicalDate.get(dateOffset + trainingLength - 1) + ".nnet");
+			File netFile = new File(st.getId()+"-"+ historicalDate.get(dateOffset + trainingLength - 1) + ".nnet");
 			if (!netFile.exists()) {
-				System.out.println("Net not exists.");
-				System.out.println("---------- Start training ----------");
+				//Training Start
 				TrainingSet trainingSet = new TrainingSet();
-				System.out.println("The start date is " + historicalDate.get(dateOffset));
-				System.out.println("The end date is " + historicalDate.get(dateOffset + trainingLength - 1));
-
+				
 				priceTemp = new double[trainingLength];
 				for (int i = 0; i < trainingLength; ++i) {
 					priceTemp[i] = historicalData.get(i + dateOffset);
 				}
-				// priceMax = max(priceTemp);
-				// System.out.println("max: " + priceMax);
+				
 				for (int i = 0; i < priceTemp.length; ++i) {
 					priceTemp[i] = norm(priceTemp[i], priceMax);
 				}
@@ -140,29 +154,17 @@ public class ANN {
 					for (int j = 0; j < inputNum; ++j) {
 						inputSet[j] = priceTemp[i + j];
 					}
-					trainingSet.addElement(
-							new SupervisedTrainingElement(inputSet, new double[] { priceTemp[i + inputNum] }));
+					trainingSet.addElement(new SupervisedTrainingElement(inputSet, new double[] { priceTemp[i + inputNum] }));
 				}
-
 				neuralNet.learnInSameThread(trainingSet);
-				System.out.println("---------- Finish training ----------");
-				neuralNet.save("11-"+ historicalDate.get(dateOffset + trainingLength - 1) + ".nnet");
-				System.out.println("Successfully save the neural net for 11-"
-						+ historicalDate.get(dateOffset + trainingLength - 1) + ".");
+				neuralNet.save(st.getId()+"-"+ historicalDate.get(dateOffset + trainingLength - 1) + ".nnet");
 			} else {
-				System.out.println("Net exists.");
-				neuralNet = NeuralNetwork.load("11-"
-						+ historicalDate.get(dateOffset + trainingLength - 1) + ".nnet");
-				System.out.println("Successfully load the neural net for 11-"
-						+ historicalDate.get(dateOffset + trainingLength - 1) + ".");
+				neuralNet = NeuralNetwork.load(st.getId()+"-"+ historicalDate.get(dateOffset + trainingLength - 1) + ".nnet");
+				//successful net load
 			}
 
 			// Start testing
-			System.out.println("---------- Start testing ----------");
 			TrainingSet testSet = new TrainingSet();
-
-			// did not predict tomorrow's price before, but now do
-			// if (dateOffset < historicalData.size() - trainingLength) {
 			if (dateOffset < historicalData.size() - trainingLength + 1) {
 				for (int j = trainingLength - inputNum, i = 0; j < trainingLength; ++j, ++i) {
 					inputSet[i] = norm(historicalData.get(j + dateOffset), priceMax);
@@ -173,108 +175,31 @@ public class ANN {
 					neuralNet.setInput(testElement.getInput());
 					neuralNet.calculate();
 					Vector<Double> networkOutput = neuralNet.getOutput();
-					System.out.println("Output is :");
 					for (double output : networkOutput) {
 						output = Math.round(deNorm(output, priceMax) * 100.0) / 100.0;
 						resultData.add(output);
 						if (dateOffset == historicalData.size() - trainingLength) {
 							resultDate.add("predict day 1");
-							System.out.println("predict day 1: " + output);
+							//System.out.println("predict day 1: " + output);
+							sb.append("[{'lastten':["+historicalData.get(dateOffset)+",");
+							for(int i = dateOffset + 1; i <  historicalData.size() ;i++){
+								sb.append(","+historicalData.get(i));
+							}
+							sb.append("]}");
+							
+							prediction = resultData.get(resultData.size() - 1);
 						} else {
 							resultDate.add(historicalDate.get(trainingLength + dateOffset));
-							System.out.println(historicalDate.get(trainingLength + dateOffset) + ": " + output);
 						}
 					}
 				}
-
 			}
-
-			System.out.println("---------- Finish testing ----------");
-
 		}
 		
-		predictNext2(priceMax);
-
-		// store the predicted result into database
-		String action;
-		for (int i = 0; i < resultData.size(); ++i) {
-			if (i == resultData.size() - 1) {
-				action = "UNKNOWN";
-				String q = "INSERT INTO PredictionANN VALUES ("+st.getId()+", '"
-						+ resultDate.get(i) + "', " + resultData.get(i) + "," + 0 + ", '" + action + "')";
-				System.out.println(q);
-				//statement.executeUpdate();
-			} else {
-				if (resultData.get(i) < resultData.get(i + 1)) {
-					action = "BUY";
-				} else if (resultData.get(i) > resultData.get(i + 1)) {
-					action = "SELL";
-				} else {
-					action = "HOLD";
-				}
-				String q = "INSERT INTO PredictionANN VALUES ("+st.getId()+", '"
-						+ resultDate.get(i) + "', " + resultData.get(i) + ","
-						+ Math.round((resultData.get(i) - historicalData.get(i + trainingLength))
-								/ historicalData.get(i + trainingLength) * 10000.0) / 100.0
-						+ ", '" + action + "')";
-				System.out.println(q);
-				//statement.executeUpdate(q);
-			}
-		}
-
-		// predict the closing price of the day after tomorrow and store it
-		// into database
-		//predictNext2(priceMax);
-
-
-		// Experiments:
-		// calculated
-		// 31;3;2009;4084,76 -> 4121 Error=0.01 Rate=0.7 Iterat=100
-		// 31;3;2009;4084,76 -> 4096 Error=0.01 Rate=0.7 Iterat=1000
-		// 31;3;2009;4084,76 -> 4093 Error=0.01 Rate=0.7 Iterat=10000
-		// 31;3;2009;4084,76 -> 4108 Error=0.01 Rate=0.7 Iterat=100000
-		// 31;3;2009;4084,76 -> 4084 Error=0.001 Rate=0.7 Iterat=10000
-	}
-
-	private void loadData(int stock_id) {
-
-		historicalData.clear();
-		historicalDate.clear();
-
-		try {
-
-			Connection connection;
-
-			connection = DriverManager.getConnection(DatabaseManager.URL + DatabaseManager.DATABASE_NAME,
-					DatabaseManager.USER_NAME, DatabaseManager.PASSWORD);
-
-			Statement statement = connection.createStatement();
-
-			ResultSet res = statement.executeQuery("SELECT * FROM hist_data WHERE stock_id = '" + stock_id + "'");
-
-			while (res.next()) {
-				historicalData.add(res.getDouble("close_price"));
-				historicalDate.add(res.getString("hist_date"));
-			}
-
-			connection.close();
-
-		} catch (Exception e) {
-			System.out.println("database operation error (loading).");
-		}
-
+		sb.append(",{'prediction':["+prediction+","+predictNext2(priceMax)+"]}]");
+		return sb.toString();
 	}
 	
-	public void storeNext(int symbolNum) {
-		String action;
-
-		action = "UNKNOWN";
-		String q = "INSERT INTO PredictionANN VALUES (st.getId(), '" + nextDate
-				+ "', " + nextData + "," + 0 + ", '" + action + "')";
-		System.out.println(q);
-
-	}
-
 	// get the max input
 	private double max(double[] nums) {
 		double max = nums[0];

@@ -1,8 +1,13 @@
 package edu.rutgers.se.controllers;
 
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,33 +55,27 @@ public class StockController {
 		st.setId(stockid);
 		st.setSymbol(symbol);
 		
+		//System.out.println(startDate+"-"+endDate);
+		
 		List<InstStock> l = stockService.getRealtimeQuote(st,new Date(startDate),new Date(endDate));
-		System.out.println(l.size());
 		
 		StringBuffer sb = new StringBuffer();
-		int numOutputElems = 400;
-		int numJumps = l.size()/numOutputElems;
-		int x;
-		sb.append("[{ 'key':'Volume','bar':true,'values':[");
-
-		x = 0;
+		StringBuffer volume = new StringBuffer();
+		StringBuffer price = new StringBuffer();
+		
 		for(InstStock i : l) {
-			if(x++%numJumps == 0) {
-				sb.append("["+i.instDateTime.getTime()+","+i.volume+"],");
+			if(i.instPrice!=0){
+				volume.append("["+i.instDateTime.getTime()+","+i.volume+"],");
+				price.append("["+i.instDateTime.getTime()+","+i.instPrice+"],");
 			}
 		}
 
+		sb.append("[{ 'key':'Volume','bar':true,'values':[");
+		sb.append(volume);
 		sb.setLength(sb.length() - 1);
 		sb.append("]},{ 'key':'Price','values':[");
-
-		x = 0;
-		for(InstStock i : l) {
-			if(x++%numJumps == 0)
-				sb.append("["+i.instDateTime.getTime()+","+i.instPrice+"],");
-		}
-
+		sb.append(price);
 		sb.setLength(sb.length() - 1);
-
 		sb.append("] }]");
 		Status s = new Status();
 		s.setId(200);
@@ -164,6 +163,7 @@ public class StockController {
 						sb.append(","+rsi[x-maWindow+1]);
 					}
 				}
+				sb.append(","+i.volume);
 				sb.append("],");
 			}
 			x++;
@@ -178,4 +178,39 @@ public class StockController {
 	
 	}
 	
+	/*@RequestMapping(value = "/getRealTimeQuote", method=RequestMethod.GET)
+	public Status getRealTimeQuote(
+		       @RequestParam("stockid") int stockid,
+		       @RequestParam("symbol") String symbol
+		       ) throws ParseException, IOException{
+		
+		String url = "http://finance.yahoo.com/d/quotes.csv?s=" + symbol + "&f=sd1t1l1v&e=.csv";
+		URL yahoolive = new URL(url);
+		URLConnection datalive = yahoolive.openConnection();
+		Scanner input = new Scanner(datalive.getInputStream());
+		StringBuffer sb = new StringBuffer();
+		StringBuffer volume = new StringBuffer();
+		StringBuffer price = new StringBuffer();
+		while (input.hasNext()) {
+			String line = input.nextLine();
+			String[] tokenslive = line.split(",");
+			SimpleDateFormat from = new SimpleDateFormat("MM/dd/yyyy h:mma");
+			//SimpleDateFormat to = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date date = from.parse(tokenslive[1].substring(1, tokenslive[1].length() - 1) + " " + tokenslive[2].substring(1, tokenslive[2].length() - 1));    
+			volume.append("["+date.getTime()+","+tokenslive[4]+"],");
+			price.append("["+date.getTime()+","+tokenslive[3]+"],");
+		}
+		sb.append("[{ 'key':'Volume','bar':true,'values':[");
+		sb.append(volume);
+		sb.setLength(sb.length() - 1);
+		sb.append("]},{ 'key':'Price','values':[");
+		sb.append(price);
+		sb.setLength(sb.length() - 1);
+		sb.append("] }]");
+		input.close();
+		Status s = new Status();
+		s.setId(200);
+		s.setMessage(sb.toString());
+		return s;	
+	}*/
 }

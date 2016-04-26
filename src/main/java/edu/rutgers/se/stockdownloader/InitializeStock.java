@@ -37,10 +37,9 @@ public class InitializeStock {
 			int monthEnd = calendar.get(Calendar.MONTH);
 			int dayEnd = calendar.get(Calendar.DAY_OF_MONTH);
 			
-			calendar.setTime(DateUtils.addDays(end, -365));
-			int yearStart = calendar.get(Calendar.YEAR);
-			int monthStart = calendar.get(Calendar.MONTH);
-			int dayStart = calendar.get(Calendar.DAY_OF_MONTH);
+			int yearStart = 2015;
+			int monthStart = 1;
+			int dayStart = 1;
 			
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection connection;
@@ -50,7 +49,7 @@ public class InitializeStock {
 			String url = "http://real-chart.finance.yahoo.com/table.csv?" + "s=" + symbol + "&d=" + monthEnd
 					+ "&e=" + dayEnd + "&f=" + yearEnd + "&g=d" + "&a=" + monthStart + "&b="
 					+ dayStart + "&c=" + yearStart + "&ignore=.csv";
-
+			
 			URL yahoofin = new URL(url);
 			URLConnection data = yahoofin.openConnection();
 			Scanner input = new Scanner(data.getInputStream());
@@ -75,34 +74,30 @@ public class InitializeStock {
 			connection = DriverManager.getConnection(DatabaseManager.URL + DatabaseManager.DATABASE_NAME,
 					DatabaseManager.USER_NAME, DatabaseManager.PASSWORD);
 			
-			
 			long end = System.currentTimeMillis()/1000;
 			long start = System.currentTimeMillis()/1000 - 604800;
 			
-			for(int i = 0;i<4;i++){
-				String url = "https://finance-yql.media.yahoo.com/v7/finance/chart/"+symbol+"?period1="+start+"&period2="+end+"&interval=1m&indicators=quote&includeTimestamps=true&includePrePost=true&events=div%7Csplit%7Cearn";
-				System.out.println(url);
-				JSONObject json = readJsonFromUrl(url).getJSONObject("chart").getJSONArray("result").getJSONObject(0);
-			    //System.out.println(json.get("meta"));
-				JSONArray timeStamps = json.getJSONArray("timestamp");
-				JSONArray volumes = json.getJSONObject("indicators").getJSONArray("quote").getJSONObject(0).getJSONArray("volume");
-				JSONArray close_prices = json.getJSONObject("indicators").getJSONArray("quote").getJSONObject(0).getJSONArray("close");
+			String url = "https://finance-yql.media.yahoo.com/v7/finance/chart/"+symbol+"?period1="+start+"&period2="+end+"&interval=1m&indicators=quote&includeTimestamps=true&includePrePost=true&events=div%7Csplit%7Cearn";
+			System.out.println(url);
+			JSONObject json = readJsonFromUrl(url).getJSONObject("chart").getJSONArray("result").getJSONObject(0);
+		    //System.out.println(json.get("meta"));
+			JSONArray timeStamps = json.getJSONArray("timestamp");
+			JSONArray volumes = json.getJSONObject("indicators").getJSONArray("quote").getJSONObject(0).getJSONArray("volume");
+			JSONArray close_prices = json.getJSONObject("indicators").getJSONArray("quote").getJSONObject(0).getJSONArray("close");
+		
+		    for (int x = 0 ; x < timeStamps.length(); x++) {
+		        String timestamp = timeStamps.get(x).toString();
+		        String volume = volumes.get(x).toString();
+		        String price = close_prices.get(x).toString();
+		        Date d = new Date(Long.parseLong(timestamp) * 1000);
+		        
+		        SimpleDateFormat to = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String datetime = to.format(d);    
+				Statement statement = connection.createStatement();
+				String query ="INSERT IGNORE INTO `inst_data`(`stock_id`, `inst_datetime`, `inst_price`, `volume`) VALUES ("+stockid+",'"+datetime+"'," + price + "," + volume + ")";
+				statement.execute(query);
+		    }
 			
-			    for (int x = 0 ; x < timeStamps.length(); x++) {
-			        String timestamp = timeStamps.get(x).toString();
-			        String volume = volumes.get(x).toString();
-			        String price = close_prices.get(x).toString();
-			        Date d = new Date(Long.parseLong(timestamp) * 1000);
-			        
-			        SimpleDateFormat to = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-					String datetime = to.format(d);    
-					Statement statement = connection.createStatement();
-					String query ="INSERT IGNORE INTO `inst_data`(`stock_id`, `inst_datetime`, `inst_price`, `volume`) VALUES ("+stockid+",'"+datetime+"'," + price + "," + volume + ")";
-					statement.execute(query);
-			    }
-			    end = end - 604800;
-			    start = start - 604800;
-			}
 			connection.close();
 		} catch (Exception e) {
 			e.printStackTrace();
