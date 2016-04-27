@@ -1,29 +1,35 @@
 package edu.rutgers.se.controllers;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Scanner;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import edu.rutgers.se.ann.ANN;
 import edu.rutgers.se.beans.HistStock;
 import edu.rutgers.se.beans.InstStock;
+import edu.rutgers.se.beans.KFPredictionResults;
 import edu.rutgers.se.beans.Status;
 import edu.rutgers.se.beans.Stock;
 import edu.rutgers.se.components.IStockService;
 import edu.rutgers.se.ma.MovingAverage;
 import edu.rutgers.se.rsi.RSI;
+import edu.rutgers.se.svm.SVMMain;
+import libsvm.svm_model;
 
 @CrossOrigin
 @RestController
@@ -33,7 +39,7 @@ public class StockController {
 	private IStockService stockService;
 	
 	@RequestMapping(value = "/initstock", method=RequestMethod.GET)
-	public Status initStock(
+	public @ResponseBody Status initStock(
 			@RequestParam(value = "stockid",required = true) Integer stockid, 
 			@RequestParam(value = "symbol",required = true) String symbol
 			) throws InterruptedException, ExecutionException{
@@ -45,7 +51,7 @@ public class StockController {
 	}	
 	
 	@RequestMapping(value = "/getRealTimeData", method=RequestMethod.GET)
-	public Status getRealTimeData(
+	public @ResponseBody Status getRealTimeData(
 		       @RequestParam("stockid") int stockid,
 		       @RequestParam("symbol") String symbol,
 		       @RequestParam("startDate") long startDate,
@@ -84,7 +90,7 @@ public class StockController {
 	}
 	
 	@RequestMapping(value = "/getHistoricalData", method=RequestMethod.GET)
-	public Status getHistoricalData(
+	public @ResponseBody Status getHistoricalData(
 				       @RequestParam("stockid") int stockid,
 				       @RequestParam("symbol") String symbol,
 				       @RequestParam("startDate") long startDate,
@@ -178,39 +184,136 @@ public class StockController {
 	
 	}
 	
-	/*@RequestMapping(value = "/getRealTimeQuote", method=RequestMethod.GET)
-	public Status getRealTimeQuote(
-		       @RequestParam("stockid") int stockid,
-		       @RequestParam("symbol") String symbol
-		       ) throws ParseException, IOException{
-		
-		String url = "http://finance.yahoo.com/d/quotes.csv?s=" + symbol + "&f=sd1t1l1v&e=.csv";
-		URL yahoolive = new URL(url);
-		URLConnection datalive = yahoolive.openConnection();
-		Scanner input = new Scanner(datalive.getInputStream());
-		StringBuffer sb = new StringBuffer();
-		StringBuffer volume = new StringBuffer();
-		StringBuffer price = new StringBuffer();
-		while (input.hasNext()) {
-			String line = input.nextLine();
-			String[] tokenslive = line.split(",");
-			SimpleDateFormat from = new SimpleDateFormat("MM/dd/yyyy h:mma");
-			//SimpleDateFormat to = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			Date date = from.parse(tokenslive[1].substring(1, tokenslive[1].length() - 1) + " " + tokenslive[2].substring(1, tokenslive[2].length() - 1));    
-			volume.append("["+date.getTime()+","+tokenslive[4]+"],");
-			price.append("["+date.getTime()+","+tokenslive[3]+"],");
+	//Prediction Part
+	
+	
+	
+	@RequestMapping(value = "/getKFPrediction", method=RequestMethod.GET)
+	public @ResponseBody Status getKFPrediction(
+			@RequestParam(value = "stockid",required = true) Integer stockid, 
+			@RequestParam(value = "symbol",required = true) String symbol
+			) throws InterruptedException, ExecutionException{
+		Stock st = new Stock();
+		st.setId(stockid);
+		st.setSymbol(symbol);
+		String jsonInString="";
+		try{
+			KFPredictionResults pr = null;
+			List<InstStock> stockData = stockService.getDailyClosingPrices(st);
+			pr = stockService.doPrediction(stockData);
+			ObjectMapper mapper = new ObjectMapper();
+			//Object to JSON in String
+			jsonInString = mapper.writeValueAsString(pr);
+		}catch(Exception e){
+			e.printStackTrace();
 		}
-		sb.append("[{ 'key':'Volume','bar':true,'values':[");
-		sb.append(volume);
-		sb.setLength(sb.length() - 1);
-		sb.append("]},{ 'key':'Price','values':[");
-		sb.append(price);
-		sb.setLength(sb.length() - 1);
-		sb.append("] }]");
-		input.close();
+		Status s = new Status();
+		s.setId(200);
+		s.setMessage(jsonInString);
+		return s;		
+	}
+	
+	@RequestMapping(value = "/getSVMPrediction", method=RequestMethod.GET)
+	public @ResponseBody Status getSVMPrediction(
+			@RequestParam(value = "stockid",required = true) Integer stockid, 
+			@RequestParam(value = "symbol",required = true) String symbol
+			) throws InterruptedException, ExecutionException{
+		Stock st = new Stock();
+		st.setId(stockid);
+		st.setSymbol(symbol);
+		StringBuffer sb = new StringBuffer();
+		try{
+			List<InstStock> allData = stockService.getDailyClosingPrices(st);
+			double[] allClosingPrices=new double[allData.size()];
+			for(int i=0; i<allData.size(); i++){
+				allClosingPrices[i]=allData.get(i).instPrice;
+			}
+			
+			if (allData.size()>32){
+				SVMMain svmPredict = SVMMain.GetInstance();
+				int[] patternsHappening=new int[7];
+				int pointer=0;
+						
+				Iterator it = svmPredict.getGmodels().entrySet().iterator();
+				while (it.hasNext()) {
+					Map.Entry pair = (Map.Entry)it.next();
+					int range = 150;
+					if (allClosingPrices.length<range) range=allClosingPrices.length;
+					double isThePattern = svmPredict.svmTest(allClosingPrices, (svm_model)pair.getValue() ,21, range);
+					        
+					if (isThePattern==1){
+						patternsHappening[pointer]=Integer.parseInt(pair.getKey().toString());
+						
+						pointer++;
+					}    
+				}
+					    
+				double buyConfidence = 0;
+				double sellConfidence = 0;
+				double holdConfidence = 0;
+					    
+				for (int j=0; j< patternsHappening.length; j++){
+					switch (patternsHappening[j]){
+					case 1:
+						sellConfidence=sellConfidence+1;
+						break;
+						//"sell"
+					case 2:
+						buyConfidence=buyConfidence+1;
+						break;
+						//"buy"
+					case 3:
+						//"sell"
+						sellConfidence=sellConfidence+1;
+						break;
+					case 4:
+						//"hold"
+						holdConfidence=holdConfidence+1;
+						break;
+					case 5:
+						//"buy"
+						buyConfidence=buyConfidence+1;
+						break;
+					case 6:
+						//gLogger.log("IM sixxxxxxxx");
+						holdConfidence=holdConfidence+1;
+						break;
+						//"hold"
+					case 7:
+						holdConfidence=holdConfidence+1;
+						break;
+						//"hold"
+					}
+				}
+					    
+				double totalConfidence=buyConfidence+sellConfidence+holdConfidence;
+				double buy = (buyConfidence/totalConfidence)*100;
+				double sell = (sellConfidence/totalConfidence)*100;
+				double hold = (holdConfidence/totalConfidence)*100;
+				sb.append("{'values':['buy':"+buy+",'sell':"+sell+",'hold':"+hold+"]}");
+			}
+		}catch(Exception e){
+			
+		}
 		Status s = new Status();
 		s.setId(200);
 		s.setMessage(sb.toString());
 		return s;	
-	}*/
+	}
+	
+	@RequestMapping(value = "/getAnnPrediction", method=RequestMethod.GET)
+	public @ResponseBody Status getAnnPrediction(
+			@RequestParam(value = "stockid",required = true) Integer stockid, 
+			@RequestParam(value = "symbol",required = true) String symbol
+			) throws InterruptedException, ExecutionException{
+		Stock st = new Stock();
+		st.setId(stockid);
+		st.setSymbol(symbol);
+		ANN ann = new ANN();
+		String sb = ann.predictHistory(st);
+		Status s = new Status();
+		s.setId(200);
+		s.setMessage(sb);
+		return s;
+	}
 }

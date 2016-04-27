@@ -24,11 +24,33 @@
         <parameter qname="pns:stockid" xmlns:pns="http://controllers.se.rutgers.edu" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
         <parameter qname="pns:symbol" xmlns:pns="http://controllers.se.rutgers.edu" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
       </operation>
-      <operation name="annPrediction" qname="operNS:annPrediction" xmlns:operNS="http://controllers.se.rutgers.edu" soapAction="" >
+      <operation name="getKFPrediction" qname="operNS:getKFPrediction" xmlns:operNS="http://controllers.se.rutgers.edu" returnQName="retNS:getKFPredictionReturn" xmlns:retNS="http://controllers.se.rutgers.edu" returnType="rtns:Status" xmlns:rtns="http://beans.se.rutgers.edu" soapAction="" >
         <parameter qname="pns:stockid" xmlns:pns="http://controllers.se.rutgers.edu" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
         <parameter qname="pns:symbol" xmlns:pns="http://controllers.se.rutgers.edu" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
       </operation>
-      <parameter name="allowedMethods" value="annPrediction initStock"/>
+      <operation name="getSVMPrediction" qname="operNS:getSVMPrediction" xmlns:operNS="http://controllers.se.rutgers.edu" returnQName="retNS:getSVMPredictionReturn" xmlns:retNS="http://controllers.se.rutgers.edu" returnType="rtns:Status" xmlns:rtns="http://beans.se.rutgers.edu" soapAction="" >
+        <parameter qname="pns:stockid" xmlns:pns="http://controllers.se.rutgers.edu" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:symbol" xmlns:pns="http://controllers.se.rutgers.edu" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getRealTimeData" qname="operNS:getRealTimeData" xmlns:operNS="http://controllers.se.rutgers.edu" returnQName="retNS:getRealTimeDataReturn" xmlns:retNS="http://controllers.se.rutgers.edu" returnType="rtns:Status" xmlns:rtns="http://beans.se.rutgers.edu" soapAction="" >
+        <parameter qname="pns:stockid" xmlns:pns="http://controllers.se.rutgers.edu" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:symbol" xmlns:pns="http://controllers.se.rutgers.edu" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:startDate" xmlns:pns="http://controllers.se.rutgers.edu" type="tns:long" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:endDate" xmlns:pns="http://controllers.se.rutgers.edu" type="tns:long" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getHistoricalData" qname="operNS:getHistoricalData" xmlns:operNS="http://controllers.se.rutgers.edu" returnQName="retNS:getHistoricalDataReturn" xmlns:retNS="http://controllers.se.rutgers.edu" returnType="rtns:Status" xmlns:rtns="http://beans.se.rutgers.edu" soapAction="" >
+        <parameter qname="pns:stockid" xmlns:pns="http://controllers.se.rutgers.edu" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:symbol" xmlns:pns="http://controllers.se.rutgers.edu" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:startDate" xmlns:pns="http://controllers.se.rutgers.edu" type="tns:long" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:endDate" xmlns:pns="http://controllers.se.rutgers.edu" type="tns:long" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:indicator" xmlns:pns="http://controllers.se.rutgers.edu" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:maWindow" xmlns:pns="http://controllers.se.rutgers.edu" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getAnnPrediction" qname="operNS:getAnnPrediction" xmlns:operNS="http://controllers.se.rutgers.edu" returnQName="retNS:getAnnPredictionReturn" xmlns:retNS="http://controllers.se.rutgers.edu" returnType="rtns:Status" xmlns:rtns="http://beans.se.rutgers.edu" soapAction="" >
+        <parameter qname="pns:stockid" xmlns:pns="http://controllers.se.rutgers.edu" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:symbol" xmlns:pns="http://controllers.se.rutgers.edu" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <parameter name="allowedMethods" value="getHistoricalData getKFPrediction getRealTimeData getSVMPrediction initStock getAnnPrediction"/>
 
       <typeMapping
         xmlns:ns="http://beans.se.rutgers.edu"

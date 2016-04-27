@@ -20,7 +20,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="annPrediction">
+   <element name="getKFPrediction">
     <complexType>
      <sequence>
       <element name="stockid" type="xsd:int"/>
@@ -28,8 +28,78 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="annPredictionResponse">
-    <complexType/>
+   <element name="getKFPredictionResponse">
+    <complexType>
+     <sequence>
+      <element name="getKFPredictionReturn" type="tns1:Status"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getSVMPrediction">
+    <complexType>
+     <sequence>
+      <element name="stockid" type="xsd:int"/>
+      <element name="symbol" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getSVMPredictionResponse">
+    <complexType>
+     <sequence>
+      <element name="getSVMPredictionReturn" type="tns1:Status"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getRealTimeData">
+    <complexType>
+     <sequence>
+      <element name="stockid" type="xsd:int"/>
+      <element name="symbol" type="xsd:string"/>
+      <element name="startDate" type="xsd:long"/>
+      <element name="endDate" type="xsd:long"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getRealTimeDataResponse">
+    <complexType>
+     <sequence>
+      <element name="getRealTimeDataReturn" type="tns1:Status"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getHistoricalData">
+    <complexType>
+     <sequence>
+      <element name="stockid" type="xsd:int"/>
+      <element name="symbol" type="xsd:string"/>
+      <element name="startDate" type="xsd:long"/>
+      <element name="endDate" type="xsd:long"/>
+      <element name="indicator" type="xsd:string"/>
+      <element name="maWindow" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getHistoricalDataResponse">
+    <complexType>
+     <sequence>
+      <element name="getHistoricalDataReturn" type="tns1:Status"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getAnnPrediction">
+    <complexType>
+     <sequence>
+      <element name="stockid" type="xsd:int"/>
+      <element name="symbol" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getAnnPredictionResponse">
+    <complexType>
+     <sequence>
+      <element name="getAnnPredictionReturn" type="tns1:Status"/>
+     </sequence>
+    </complexType>
    </element>
   </schema>
   <schema elementFormDefault="qualified" targetNamespace="http://beans.se.rutgers.edu" xmlns="http://www.w3.org/2001/XMLSchema">
@@ -37,7 +107,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <sequence>
      <element name="id" type="xsd:int"/>
      <element name="message" nillable="true" type="xsd:string"/>
-     <element name="messagel" nillable="true" type="xsd:string"/>
     </sequence>
    </complexType>
   </schema>
@@ -59,17 +128,81 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="annPredictionResponse">
+   <wsdl:message name="getSVMPredictionResponse">
 
-      <wsdl:part element="impl:annPredictionResponse" name="parameters">
+      <wsdl:part element="impl:getSVMPredictionResponse" name="parameters">
 
       </wsdl:part>
 
    </wsdl:message>
 
-   <wsdl:message name="annPredictionRequest">
+   <wsdl:message name="getHistoricalDataRequest">
 
-      <wsdl:part element="impl:annPrediction" name="parameters">
+      <wsdl:part element="impl:getHistoricalData" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getRealTimeDataRequest">
+
+      <wsdl:part element="impl:getRealTimeData" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getSVMPredictionRequest">
+
+      <wsdl:part element="impl:getSVMPrediction" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getRealTimeDataResponse">
+
+      <wsdl:part element="impl:getRealTimeDataResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getAnnPredictionRequest">
+
+      <wsdl:part element="impl:getAnnPrediction" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getHistoricalDataResponse">
+
+      <wsdl:part element="impl:getHistoricalDataResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getKFPredictionRequest">
+
+      <wsdl:part element="impl:getKFPrediction" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getKFPredictionResponse">
+
+      <wsdl:part element="impl:getKFPredictionResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getAnnPredictionResponse">
+
+      <wsdl:part element="impl:getAnnPredictionResponse" name="parameters">
 
       </wsdl:part>
 
@@ -89,13 +222,61 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="annPrediction">
+      <wsdl:operation name="getKFPrediction">
 
-         <wsdl:input message="impl:annPredictionRequest" name="annPredictionRequest">
+         <wsdl:input message="impl:getKFPredictionRequest" name="getKFPredictionRequest">
 
        </wsdl:input>
 
-         <wsdl:output message="impl:annPredictionResponse" name="annPredictionResponse">
+         <wsdl:output message="impl:getKFPredictionResponse" name="getKFPredictionResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getSVMPrediction">
+
+         <wsdl:input message="impl:getSVMPredictionRequest" name="getSVMPredictionRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getSVMPredictionResponse" name="getSVMPredictionResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getRealTimeData">
+
+         <wsdl:input message="impl:getRealTimeDataRequest" name="getRealTimeDataRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getRealTimeDataResponse" name="getRealTimeDataResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getHistoricalData">
+
+         <wsdl:input message="impl:getHistoricalDataRequest" name="getHistoricalDataRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getHistoricalDataResponse" name="getHistoricalDataResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getAnnPrediction">
+
+         <wsdl:input message="impl:getAnnPredictionRequest" name="getAnnPredictionRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getAnnPredictionResponse" name="getAnnPredictionResponse">
 
        </wsdl:output>
 
@@ -125,17 +306,89 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="annPrediction">
+      <wsdl:operation name="getKFPrediction">
 
          <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="annPredictionRequest">
+         <wsdl:input name="getKFPredictionRequest">
 
             <wsdlsoap:body use="literal"/>
 
          </wsdl:input>
 
-         <wsdl:output name="annPredictionResponse">
+         <wsdl:output name="getKFPredictionResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getSVMPrediction">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getSVMPredictionRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getSVMPredictionResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getRealTimeData">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getRealTimeDataRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getRealTimeDataResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getHistoricalData">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getHistoricalDataRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getHistoricalDataResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getAnnPrediction">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getAnnPredictionRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getAnnPredictionResponse">
 
             <wsdlsoap:body use="literal"/>
 

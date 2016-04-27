@@ -84,7 +84,7 @@ public class KalmanPredictor {
 	                
 	        for (int i = 0; i <DAYS_TO_PREDICT ; i++) {
 	        	
-	        	System.out.println("");
+	        	//System.out.println("");
 	            
 	            // check state before
 	            s = kalman.Predict();
