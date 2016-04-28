@@ -1,6 +1,6 @@
 package edu.rutgers.se.ma;
 
-import edu.rutgers.se.beans.*;
+import edu.rutgers.se.beans.HistStock;
 import java.util.*;
 	
 public class MovingAverage{	

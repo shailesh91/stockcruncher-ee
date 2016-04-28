@@ -20,11 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import edu.rutgers.se.ann.ANN;
-import edu.rutgers.se.beans.HistStock;
-import edu.rutgers.se.beans.InstStock;
-import edu.rutgers.se.beans.KFPredictionResults;
-import edu.rutgers.se.beans.Status;
-import edu.rutgers.se.beans.Stock;
+import edu.rutgers.se.beans.*;
 import edu.rutgers.se.components.IStockService;
 import edu.rutgers.se.ma.MovingAverage;
 import edu.rutgers.se.rsi.RSI;
@@ -40,7 +36,7 @@ public class StockController {
 	
 	@RequestMapping(value = "/initstock", method=RequestMethod.GET)
 	public @ResponseBody Status initStock(
-			@RequestParam(value = "stockid",required = true) Integer stockid, 
+			@RequestParam(value = "stockid",required = true) int stockid, 
 			@RequestParam(value = "symbol",required = true) String symbol
 			) throws InterruptedException, ExecutionException{
 		Status s = new Status();
@@ -275,7 +271,6 @@ public class StockController {
 						buyConfidence=buyConfidence+1;
 						break;
 					case 6:
-						//gLogger.log("IM sixxxxxxxx");
 						holdConfidence=holdConfidence+1;
 						break;
 						//"hold"

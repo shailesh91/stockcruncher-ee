@@ -244,50 +244,36 @@ public class SVMMain {
 		
 		int range = 40; // user input
 		
-		// String TestFileName = "/Users/parishad/term4/SoftwareEngineering/HW3/histdataApple.csv";
 		//check to see if it's cup and handle:
 		svm_model MyModel = new svm_model();
 		
-		// int NumLines = mymain.countLines("/Users/parishad/term4/SoftwareEngineering/MyProject/cup21.txt");
 		MyModel = this.svmTrain("cup21.txt");
 		gModels.put(1, MyModel);
-		// double check_cup_handle = pari.mySvmTest(TestFileName,MyModel,NumLines,range);
 		//check to see if it's ascending triangle
 		svm_model MyModel1 = new svm_model();
-		// int NumLines1 = mymain.countLines("/Users/parishad/term4/SoftwareEngineering/MyProject/AsTri21.txt");
 		MyModel1 = this.svmTrain("AsTri21.txt");
 		gModels.put(2, MyModel1);
-		// double check_as_tri = pari.mySvmTest(TestFileName,MyModel1,NumLines1,range);
 		// check to see if it's descending triangle
 		svm_model MyModel2 = new svm_model();
-		// int NumLines2 = mymain.countLines("/Users/parishad/term4/SoftwareEngineering/MyProject/DesTri21.txt");
 		MyModel2 = this.svmTrain("DesTri21.txt");
 		gModels.put(3, MyModel2);
-		// double check_des_tri = pari.mySvmTest(TestFileName,MyModel2,NumLines2,range);
 		// check to see if it's head and shoulder
 		svm_model MyModel3 = new svm_model();
 		MyModel3 = this.svmTrain("h&s21.txt");
 		gModels.put(4, MyModel3);
-		// double check_hs = pari.mySvmTest(TestFileName,MyModel3,NumLines3,range);
 		//check to see if it's rounding bottom
 		svm_model MyModel4 = new svm_model();
-		// int NumLines4 = mymain.countLines("/Users/parishad/term4/SoftwareEngineering/MyProject/RoundBott.txt");
 		MyModel4 = this.svmTrain("RoundBott.txt");
 		gModels.put(5, MyModel4);
-		// double check_rb = pari.mySvmTest(TestFileName,MyModel4,NumLines4,range);
 		//check to see if it's double tops
 		svm_model MyModel5 = new svm_model();
-		//int NumLines5 = mymain.countLines("/Users/parishad/term4/SoftwareEngineering/MyProject/DoubleTops.txt");
 		MyModel5 = this.svmTrain("DoubleTops.txt");
 		gModels.put(6, MyModel5);
-		// double check_doubtop = pari.mySvmTest(TestFileName,MyModel5,NumLines5,range);
-		//check to see if it's double tops
+		//check to see if it's double Bottoms
 		svm_model MyModel6 = new svm_model();
-		// int NumLines6 = mymain.countLines("/Users/parishad/term4/SoftwareEngineering/MyProject/DoubleBotts.txt");
 		MyModel6 = this.svmTrain("DoubleBotts.txt");
 		gModels.put(7, MyModel6);
 		
-		//gLogger.log("TRAINING COMPLETED", LOG_TYPE.GRAL);
 		
 	}
 

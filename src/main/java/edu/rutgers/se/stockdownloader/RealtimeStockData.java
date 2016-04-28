@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
-import edu.rutgers.se.beans.InstStock;
 import edu.rutgers.se.beans.Stock;
 import edu.rutgers.se.config.DatabaseManager;
 
